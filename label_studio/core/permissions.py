@@ -60,6 +60,12 @@ class AllPermissions(BaseModel):
     views_change: str = 'views.change'
     views_delete: str = 'views.delete'
 
+    model_testing_view: str = 'model_testing.view'
+    model_testing_create: str = 'model_testing.create'
+    model_testing_change: str = 'model_testing.change'
+    model_testing_delete: str = 'model_testing.delete'
+    model_testing_run: str = 'model_testing.run'
+
 
 all_permissions = AllPermissions()
 

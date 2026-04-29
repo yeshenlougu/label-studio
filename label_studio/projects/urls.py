@@ -53,9 +53,11 @@ _api_urlpatterns_templates = [
     path('', api.TemplateListAPI.as_view(), name='template-list'),
 ]
 
+from model_testing.urls import project_urlpatterns as model_testing_project_urlpatterns
 
 urlpatterns = [
     path('projects/', include(_urlpatterns)),
     path('api/projects/', include((_api_urlpatterns, app_name), namespace='api')),
+    path('api/projects/<int:project_id>/', include(model_testing_project_urlpatterns)),
     path('api/templates/', include((_api_urlpatterns_templates, app_name), namespace='api-templates')),
 ]

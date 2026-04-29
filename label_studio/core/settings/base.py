@@ -242,6 +242,7 @@ INSTALLED_APPS = [
     'labels_manager',
     'ml_models',
     'ml_model_providers',
+    'model_testing',
     'jwt_auth',
     'session_policy',
 ]
