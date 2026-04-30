@@ -3,6 +3,7 @@
 from django.urls import include, path
 
 from . import api, views
+from model_testing.views import ModelTestingView
 
 app_name = 'projects'
 
@@ -11,6 +12,7 @@ _urlpatterns = [
     path('', views.project_list, name='project-index'),
     path('<int:pk>/settings/', views.project_settings, name='project-settings', kwargs={'sub_path': ''}),
     path('<int:pk>/settings/<sub_path>', views.project_settings, name='project-settings-anything'),
+    path('<int:pk>/model-testing/', ModelTestingView.as_view(), name='model-testing'),
 ]
 
 # reverse for projects:api:name

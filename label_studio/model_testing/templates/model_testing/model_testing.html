@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型测试 - 数据集分割</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: #f8f9ff;
+        }
+        .tab:hover {
+            background: #f5f5f5;
+        }
+        .content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>模型测试</h1>
+            <p>项目 ID: {{ project_id }} - 对数据集进行分割和模型评估</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="splits">数据集切割</div>
+            <div class="tab" data-tab="evaluations">模型评估</div>
+        </div>
+
+        <div class="content">
+            <!-- 数据集切割 -->
+            <div class="section active" id="splits">
+                <div class="card">
+                    <h3>创建新的数据集分割</h3>
+                    <div id="split-form">
+                        <div class="form-group">
+                            <label>分割名称</label>
+                            <input type="text" id="split-name" placeholder="例如: 第一次分割">
+                        </div>
+                        <div class="form-group">
+                            <label>分割策略</label>
+                            <select id="split-strategy">
+                                <option value="random">随机分割</option>
+                                <option value="stratified">分层分割</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>测试集比例</label>
+                            <input type="range" id="test-ratio" min="10" max="50" value="20">
+                            <span id="test-ratio-value">20%</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="createSplit()">创建分割</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>已创建的分割</h3>
+                    <div id="splits-list">
+                        <div class="empty-state">
+                            <div>暂无分割，请先创建</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模型评估 -->
+            <div class="section" id="evaluations">
+                <div class="card">
+                    <h3>选择分割进行评估</h3>
+                    <div id="evaluation-select">
+                        <div class="form-group">
+                            <label>选择数据集分割</label>
+                            <select id="evaluation-split">
+                                <option value="">请先创建分割</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="startEvaluation()" disabled id="eval-btn">开始评估</button>
+                    </div>
+                </div>
+
+                <div class="card" id="evaluation-results" style="display: none;">
+                    <h3>评估结果</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="eval-total">0</div>
+                            <div class="stat-label">测试样本数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="eval-correct">0</div>
+                            <div class="stat-label">正确预测</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="eval-accuracy">0%</div>
+                            <div class="stat-label">准确率</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="accuracy-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>评估历史</h3>
+                    <div id="evaluations-list">
+                        <div class="empty-state">
+                            <div>暂无评估记录</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除模态框 -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            <h3>确认删除</h3>
+            <p>确定要删除这个分割吗？此操作不可撤销。</p>
+            <div style="margin-top: 20px; display: flex; gap: 12px;">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PROJECT_ID = {{ project_id }};
+        let deleteSplitId = null;
+
+        // 标签切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                if (tab.dataset.tab === 'evaluations') {
+                    loadSplitsForEvaluation();
+                }
+            });
+        });
+
+        // 测试集比例显示
+        document.getElementById('test-ratio').addEventListener('input', (e) => {
+            document.getElementById('test-ratio-value').textContent = e.target.value + '%';
+        });
+
+        // 加载分割列表
+        function loadSplits() {
+            fetch(`/api/projects/${PROJECT_ID}/splits/`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('splits-list');
+                    if (data.length === 0) {
+                        list.innerHTML = '<div class="empty-state"><div>暂无分割，请先创建</div></div>';
+                        return;
+                    }
+                    list.innerHTML = `
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>策略</th>
+                                    <th>训练集</th>
+                                    <th>测试集</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.map(split => `
+                                    <tr>
+                                        <td>${split.name}</td>
+                                        <td><span class="badge badge-info">${split.strategy === 'random' ? '随机' : '分层'}</span></td>
+                                        <td>${split.train_count}</td>
+                                        <td>${split.test_count}</td>
+                                        <td>${formatTime(split.created_at)}</td>
+                                        <td>
+                                            <button class="btn btn-outline btn-sm" onclick="startEvaluationFromSplit(${split.id})">评估</button>
+                                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${split.id})">删除</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                })
+                .catch(err => console.error('加载分割失败:', err));
+        }
+
+        // 为评估加载分割列表
+        function loadSplitsForEvaluation() {
+            fetch(`/api/projects/${PROJECT_ID}/splits/`)
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('evaluation-split');
+                    const btn = document.getElementById('eval-btn');
+                    if (data.length === 0) {
+                        select.innerHTML = '<option value="">请先创建分割</option>';
+                        btn.disabled = true;
+                        return;
+                    }
+                    select.innerHTML = `
+                        <option value="">选择分割...</option>
+                        ${data.map(split => `
+                            <option value="${split.id}">${split.name} (训练: ${split.train_count}, 测试: ${split.test_count})</option>
+                        `).join('')}
+                    `;
+                    btn.disabled = false;
+                })
+                .catch(err => console.error('加载分割失败:', err));
+        }
+
+        // 创建分割
+        function createSplit() {
+            const name = document.getElementById('split-name').value;
+            const strategy = document.getElementById('split-strategy').value;
+            const testRatio = parseFloat(document.getElementById('test-ratio').value) / 100;
+
+            if (!name.trim()) {
+                alert('请输入分割名称');
+                return;
+            }
+
+            fetch(`/api/projects/${PROJECT_ID}/splits/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    name: name,
+                    strategy: strategy,
+                    config: { test_ratio: testRatio }
+                })
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert('分割创建成功！');
+                    document.getElementById('split-name').value = '';
+                    loadSplits();
+                } else {
+                    res.json().then(err => alert('创建失败: ' + (err.error || '未知错误')));
+                }
+            })
+            .catch(err => {
+                console.error('创建失败:', err);
+                alert('创建失败，请重试');
+            });
+        }
+
+        // 开始评估
+        function startEvaluation() {
+            const splitId = document.getElementById('evaluation-split').value;
+            if (!splitId) {
+                alert('请选择一个分割');
+                return;
+            }
+            performEvaluation(splitId);
+        }
+
+        // 从分割列表开始评估
+        function startEvaluationFromSplit(splitId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelector('.tab[data-tab="evaluations"]').classList.add('active');
+            document.getElementById('evaluations').classList.add('active');
+            
+            loadSplitsForEvaluation();
+            setTimeout(() => {
+                document.getElementById('evaluation-split').value = splitId;
+                performEvaluation(splitId);
+            }, 100);
+        }
+
+        // 执行评估
+        function performEvaluation(splitId) {
+            const resultsDiv = document.getElementById('evaluation-results');
+            resultsDiv.style.display = 'block';
+            
+            document.getElementById('eval-total').textContent = '...';
+            document.getElementById('eval-correct').textContent = '...';
+            document.getElementById('eval-accuracy').textContent = '...';
+            document.getElementById('accuracy-bar').style.width = '0%';
+
+            fetch(`/api/projects/${PROJECT_ID}/evaluations/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    dataset_split: splitId,
+                    evaluator: 'exact_match'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const total = data.total_tasks || 0;
+                const correct = data.correct_predictions || 0;
+                const accuracy = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
+
+                document.getElementById('eval-total').textContent = total;
+                document.getElementById('eval-correct').textContent = correct;
+                document.getElementById('eval-accuracy').textContent = accuracy + '%';
+                document.getElementById('accuracy-bar').style.width = accuracy + '%';
+            })
+            .catch(err => {
+                console.error('评估失败:', err);
+                alert('评估失败，请重试');
+            });
+        }
+
+        // 删除分割
+        function openDeleteModal(splitId) {
+            deleteSplitId = splitId;
+            document.getElementById('delete-modal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            deleteSplitId = null;
+            document.getElementById('delete-modal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            if (!deleteSplitId) return;
+
+            fetch(`/api/projects/${PROJECT_ID}/splits/${deleteSplitId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCSRFToken()
+                }
+            })
+            .then(res => {
+                if (res.ok) {
+                    closeDeleteModal();
+                    loadSplits();
+                    loadSplitsForEvaluation();
+                    alert('删除成功');
+                } else {
+                    alert('删除失败');
+                }
+            })
+            .catch(err => {
+                console.error('删除失败:', err);
+                alert('删除失败');
+            });
+        }
+
+        // 获取CSRF token
+        function getCSRFToken() {
+            const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+            return cookie ? cookie.split('=')[1] : '';
+        }
+
+        // 格式化时间
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleString('zh-CN');
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSplits();
+        });
+    </script>
+</body>
+</html>
