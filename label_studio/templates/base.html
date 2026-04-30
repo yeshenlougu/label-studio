@@ -254,18 +254,22 @@
             var existingButton = document.getElementById('model-testing-sidebar');
             if (existingButton) return;
             
-            var sidebar = document.querySelector('[class*="sidebar"]') || 
-                         document.querySelector('[class*="nav"]') ||
-                         document.querySelector('nav');
+            var sidebar = document.querySelector('nav') || 
+                         document.querySelector('[class*="sidebar"]') ||
+                         document.querySelector('[class*="sider"]');
             
             if (!sidebar) {
                 setTimeout(addModelTestingButton, 500);
                 return;
             }
             
-            var menuItem = document.createElement('div');
-            menuItem.id = 'model-testing-sidebar';
-            menuItem.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; color: #667eea; hover: #667eea; margin-top: 8px; transition: all 0.2s;';
+            var menuDiv = document.createElement('div');
+            menuDiv.id = 'model-testing-sidebar';
+            menuDiv.style.cssText = 'padding: 8px 0; border-top: 1px solid #e2e8f0; margin-top: 8px;';
+            
+            var menuItem = document.createElement('a');
+            menuItem.href = '#';
+            menuItem.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; color: #4a5568; text-decoration: none; transition: all 0.2s;';
             
             var icon = document.createElement('span');
             icon.innerHTML = '🧪';
@@ -274,29 +278,33 @@
             var text = document.createElement('span');
             text.innerHTML = 'Model Testing';
             text.style.fontSize = '14px';
-            text.style.fontWeight = '500';
             
             menuItem.appendChild(icon);
             menuItem.appendChild(text);
             
             menuItem.onmouseenter = function() {
-                this.style.backgroundColor = 'rgba(102, 126, 234, 0.1)';
+                this.style.backgroundColor = '#f7fafc';
+                this.style.color = '#667eea';
             };
             menuItem.onmouseleave = function() {
                 this.style.backgroundColor = '';
+                this.style.color = '#4a5568';
             };
             
-            menuItem.onclick = function() {
+            menuItem.onclick = function(e) {
+                e.preventDefault();
                 loadModelTesting(projectId);
             };
             
-            sidebar.appendChild(menuItem);
+            menuDiv.appendChild(menuItem);
+            sidebar.appendChild(menuDiv);
         }
         
         function loadModelTesting(projectId) {
-            var mainContent = document.querySelector('[class*="main"]') || 
-                            document.querySelector('[class*="content"]') ||
-                            document.querySelector('.app-wrapper');
+            var mainContent = document.querySelector('.app-wrapper') || 
+                            document.querySelector('[class*="main-content"]') ||
+                            document.querySelector('[class*="page-content"]') ||
+                            document.querySelector('[class*="content"]');
             
             if (!mainContent) {
                 window.location.href = '/projects/' + projectId + '/model-testing/';
@@ -305,7 +313,7 @@
             
             var iframe = document.createElement('iframe');
             iframe.src = '/projects/' + projectId + '/model-testing/embed/';
-            iframe.style.cssText = 'width: 100%; height: 100%; border: none; min-height: 600px;';
+            iframe.style.cssText = 'width: 100%; height: calc(100vh - 80px); border: none;';
             
             var existingIframe = document.querySelector('#model-testing-iframe');
             if (existingIframe) {
