@@ -263,47 +263,32 @@
                 return;
             }
             
-            var menuDiv = document.createElement('div');
-            menuDiv.id = 'model-testing-sidebar';
-            menuDiv.style.cssText = 'width: 100%;';
-            
+            var sidebarLinks = sidebar.querySelectorAll('a');
             var menuItem = document.createElement('a');
             menuItem.href = '#';
-            menuItem.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; color: #4a5568; text-decoration: none; transition: all 0.2s; width: 100%; box-sizing: border-box;';
+            menuItem.id = 'model-testing-sidebar';
             
-            var icon = document.createElement('span');
-            icon.innerHTML = '🧪';
-            icon.style.fontSize = '16px';
-            
-            var text = document.createElement('span');
-            text.innerHTML = 'Model Testing';
-            text.style.fontSize = '14px';
-            
-            menuItem.appendChild(icon);
-            menuItem.appendChild(text);
-            
-            menuItem.onmouseenter = function() {
-                this.style.backgroundColor = '#f7fafc';
-                this.style.color = '#667eea';
-            };
-            menuItem.onmouseleave = function() {
-                this.style.backgroundColor = '';
-                this.style.color = '#4a5568';
-            };
+            if (sidebarLinks.length > 0) {
+                var firstLink = sidebarLinks[0];
+                var computedStyle = window.getComputedStyle(firstLink);
+                menuItem.innerHTML = '<span style="font-size: 16px; margin-right: 12px;">🧪</span><span>Model Testing</span>';
+                menuItem.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: ' + computedStyle.paddingTop + ' ' + computedStyle.paddingRight + ' ' + computedStyle.paddingBottom + ' ' + computedStyle.paddingLeft + '; color: ' + computedStyle.color + '; text-decoration: none; cursor: pointer;';
+            } else {
+                menuItem.innerHTML = '<span style="font-size: 16px; margin-right: 12px;">🧪</span><span>Model Testing</span>';
+                menuItem.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: 10px 16px; color: #4a5568; text-decoration: none; cursor: pointer;';
+            }
             
             menuItem.onclick = function(e) {
                 e.preventDefault();
                 loadModelTesting(projectId);
             };
             
-            menuDiv.appendChild(menuItem);
-            
             var organizationItem = sidebar.querySelector('a[href*="organization"]') || 
                                   sidebar.querySelector('a[href*="Organization"]');
             if (organizationItem && organizationItem.parentElement) {
-                organizationItem.parentElement.after(menuDiv);
+                organizationItem.parentElement.after(menuItem);
             } else {
-                sidebar.appendChild(menuDiv);
+                sidebar.appendChild(menuItem);
             }
         }
         
