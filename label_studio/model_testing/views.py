@@ -20,6 +20,15 @@ class ModelTestingView(View):
         })
 
 
+class ModelTestingEmbedView(View):
+    """Embedded view for model testing page (for iframe)."""
+
+    def get(self, request, pk):
+        return render(request, 'model_testing/model_testing_embed.html', {
+            'project_id': pk
+        })
+
+
 class ProjectListWithTestingView(View):
     """View to show project list with model testing links."""
 
