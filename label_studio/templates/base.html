@@ -263,30 +263,36 @@
                 return;
             }
             
-            var sidebarLinks = sidebar.querySelectorAll('a');
-            var menuItem = document.createElement('a');
-            menuItem.href = '#';
+            var menuItems = sidebar.querySelectorAll('[class*="menu"] li, [class*="nav"] li, [class*="item"]');
+            var menuItem = document.createElement('div');
             menuItem.id = 'model-testing-sidebar';
+            menuItem.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box;';
             
-            if (sidebarLinks.length > 0) {
-                var firstLink = sidebarLinks[0];
-                var computedStyle = window.getComputedStyle(firstLink);
-                menuItem.innerHTML = '<span style="font-size: 16px; margin-right: 12px;">🧪</span><span>Model Testing</span>';
-                menuItem.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: ' + computedStyle.paddingTop + ' ' + computedStyle.paddingRight + ' ' + computedStyle.paddingBottom + ' ' + computedStyle.paddingLeft + '; color: ' + computedStyle.color + '; text-decoration: none; cursor: pointer;';
+            var link = document.createElement('a');
+            link.href = '#';
+            link.innerHTML = '<span style="font-size: 16px; margin-right: 12px;">🧪</span><span>Model Testing</span>';
+            
+            if (menuItems.length > 0) {
+                var firstItem = menuItems[0];
+                var computedStyle = window.getComputedStyle(firstItem);
+                link.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: ' + computedStyle.paddingTop + ' ' + computedStyle.paddingRight + ' ' + computedStyle.paddingBottom + ' ' + computedStyle.paddingLeft + '; color: ' + computedStyle.color + '; text-decoration: none; cursor: pointer;';
             } else {
-                menuItem.innerHTML = '<span style="font-size: 16px; margin-right: 12px;">🧪</span><span>Model Testing</span>';
-                menuItem.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: 10px 16px; color: #4a5568; text-decoration: none; cursor: pointer;';
+                link.style.cssText = 'display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: 10px 16px; color: #4a5568; text-decoration: none; cursor: pointer;';
             }
             
-            menuItem.onclick = function(e) {
+            link.onclick = function(e) {
                 e.preventDefault();
                 loadModelTesting(projectId);
             };
+            
+            menuItem.appendChild(link);
             
             var organizationItem = sidebar.querySelector('a[href*="organization"]') || 
                                   sidebar.querySelector('a[href*="Organization"]');
             if (organizationItem && organizationItem.parentElement) {
                 organizationItem.parentElement.after(menuItem);
+            } else if (menuItems.length > 0) {
+                menuItems[menuItems.length - 1].parentElement.appendChild(menuItem);
             } else {
                 sidebar.appendChild(menuItem);
             }
