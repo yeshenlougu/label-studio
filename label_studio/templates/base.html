@@ -238,6 +238,48 @@
     })();
 
   </script>
+  <script nonce="{{request.csp_nonce}}">
+    (function() {
+        function addModelTestingButton() {
+            var currentPath = window.location.pathname;
+            var match = currentPath.match(/\/projects\/(\d+)/);
+            if (!match) {
+                var existingButton = document.getElementById('model-testing-entry');
+                if (existingButton) existingButton.remove();
+                return;
+            }
+            
+            var projectId = match[1];
+            
+            var existingButton = document.getElementById('model-testing-entry');
+            if (existingButton) return;
+            
+            var container = document.createElement('div');
+            container.id = 'model-testing-entry';
+            container.style.cssText = 'position: fixed; bottom: 24px; right: 24px; z-index: 9999;';
+            
+            var link = document.createElement('a');
+            link.href = '/projects/' + projectId + '/model-testing/';
+            link.innerHTML = '🧪 模型测试';
+            link.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 24px; font-weight: 500; font-size: 14px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;';
+            
+            link.onmouseenter = function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.5)';
+            };
+            link.onmouseleave = function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+            };
+            
+            container.appendChild(link);
+            document.body.appendChild(container);
+        }
+        
+        setTimeout(addModelTestingButton, 1500);
+        setInterval(addModelTestingButton, 2000);
+    })();
+  </script>
 {% endblock %}
 
 <div id="dynamic-content">
