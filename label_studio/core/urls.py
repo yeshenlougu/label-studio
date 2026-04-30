@@ -31,6 +31,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularYAMLAPIView,
 )
+from model_testing.views import ProjectListWithTestingView
 
 urlpatterns = [
     re_path(r'^$', views.main, name='main'),
@@ -69,6 +70,7 @@ urlpatterns = [
     re_path(r'^', include('labels_manager.urls')),
     re_path(r'^', include('fsm.urls')),
     path('api/model-testing/', include('model_testing.urls')),
+    path('model-testing/', ProjectListWithTestingView.as_view(), name='model-testing-list'),
     re_path(r'version/', views.version_page, name='version'),  # html page
     re_path(r'api/version/', views.version_page, name='api-version'),  # json response
     re_path(r'health/', views.health, name='health'),

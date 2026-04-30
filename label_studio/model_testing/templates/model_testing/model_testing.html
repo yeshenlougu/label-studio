@@ -302,8 +302,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>模型测试</h1>
-            <p>项目 ID: {{ project_id }} - 对数据集进行分割和模型评估</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>模型测试</h1>
+                    <p>项目 ID: {{ project_id }} - 对数据集进行分割和模型评估</p>
+                </div>
+                <a href="/projects/{{ project_id }}/data" class="btn btn-outline" style="margin-top: 10px;">返回项目</a>
+            </div>
         </div>
 
         <div class="tabs">

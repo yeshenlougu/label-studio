@@ -5,6 +5,7 @@ from django.views import View
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from projects.models import Project
 from .models import DatasetSplit
 from .api import DatasetSplitViewSet
 import json
@@ -16,6 +17,26 @@ class ModelTestingView(View):
     def get(self, request, pk):
         return render(request, 'model_testing/model_testing.html', {
             'project_id': pk
+        })
+
+
+class ProjectListWithTestingView(View):
+    """View to show project list with model testing links."""
+
+    def get(self, request):
+        projects = Project.objects.all().order_by('-created_at')
+        project_list = []
+        for project in projects:
+            project_list.append({
+                'id': project.id,
+                'title': project.title,
+                'description': project.description,
+                'task_count': getattr(project, 'task_number', 0),
+                'annotation_count': getattr(project, 'total_annotations_number', 0),
+                'created_at': project.created_at.strftime('%Y-%m-%d %H:%M'),
+            })
+        return render(request, 'model_testing/project_list.html', {
+            'projects': project_list
         })
 
 
@@ -52,7 +73,6 @@ class CreateSplitView(View):
             if not name:
                 return JsonResponse({'error': 'Name is required'}, status=400)
 
-            # Create split using the existing API logic
             viewset = DatasetSplitViewSet.as_view({'post': 'create'})
             fake_request = type('obj', (object,), {
                 'method': 'POST',

@@ -173,6 +173,23 @@ export const MachineLearningSettings = () => {
           </div>
         )}
 
+        <div className="my-wide">
+          <SimpleCard title="Model Testing" className="bg-primary-background border-primary-border-subtler p-base">
+            <Typography size="small" className="text-neutral-content-subtler mb-base">
+              Test your model's accuracy by splitting your dataset into training and test sets, then evaluating predictions against ground truth annotations.
+            </Typography>
+            <NavLink
+              to="../model-testing"
+              className="inline-flex items-center gap-1 text-primary-link hover:underline"
+              aria-label="Go to model testing page"
+            >
+              <Button variant="secondary" look="outline" aria-label="Go to model testing">
+                Open Model Testing
+              </Button>
+            </NavLink>
+          </SimpleCard>
+        </div>
+
         <Form
           action="updateProject"
           formData={{ ...project }}
