@@ -265,7 +265,7 @@
             
             var menuDiv = document.createElement('div');
             menuDiv.id = 'model-testing-sidebar';
-            menuDiv.style.cssText = 'padding: 8px 0; border-top: 1px solid #e2e8f0; margin-top: 8px;';
+            menuDiv.style.cssText = 'padding: 8px 0;';
             
             var menuItem = document.createElement('a');
             menuItem.href = '#';
@@ -297,7 +297,14 @@
             };
             
             menuDiv.appendChild(menuItem);
-            sidebar.appendChild(menuDiv);
+            
+            var organizationItem = sidebar.querySelector('a[href*="organization"]') || 
+                                  sidebar.querySelector('a[href*="Organization"]');
+            if (organizationItem && organizationItem.parentElement) {
+                organizationItem.parentElement.after(menuDiv);
+            } else {
+                sidebar.appendChild(menuDiv);
+            }
         }
         
         function loadModelTesting(projectId) {
